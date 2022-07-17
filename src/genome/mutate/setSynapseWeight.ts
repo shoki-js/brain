@@ -25,7 +25,7 @@ export function setSynapseWeight(
 		return;
 	}
 
-	synapse.weight = weight;
+	synapse.weight = Math.min(4, Math.max(weight, -4));
 
 	return index;
 }
