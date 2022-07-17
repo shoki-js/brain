@@ -106,12 +106,8 @@ export class Brain {
 	public getGenome() {
 		// clone the genome so any mutations dont affect this brain
 		const genome: Genome = {
-			neurons: this.neurons
-				.filter((n): n is HasIndex<Neuron> => n !== null)
-				.map((n) => ({ ...n })),
-			synapses: this.synapses
-				.filter((s): s is HasIndex<Synapse> => s !== null)
-				.map((s) => ({ ...s })),
+			neurons: this.neurons.map((n) => (n === null ? null : { ...n })),
+			synapses: this.synapses.map((s) => (s === null ? null : { ...s })),
 		};
 
 		return genome;
