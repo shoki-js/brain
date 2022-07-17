@@ -1,63 +1,66 @@
-import { activationFunctions, ActivationFunctionType } from "./node/activation";
-import { calculateLayers } from "./node/graph/layers";
-import { Node } from "./node/node";
+import {
+	activationFunctions,
+	ActivationFunctionType,
+} from "./neuron/activation";
+import { calculateLayers } from "./neuron/graph/layers";
+import { Neuron } from "./neuron/neuron";
 import { Synapse } from "./synapse/synapse";
 
 type HasIndex<T> = T & {
 	index: number;
 };
 
-type NodeCreation = {
+type NeuronCreation = {
 	activation: ActivationFunctionType;
 	description: string;
 };
 
 export class Brain {
-	nodes: HasIndex<Node>[] = [];
+	neurons: HasIndex<Neuron>[] = [];
 	synapses: HasIndex<Synapse>[] = [];
 
 	/**
-	 * Nodes to evaluate
+	 * Neurons to evaluate
 	 */
-	evaluations: { node: number; synapseIndices: number[] }[] = [];
+	evaluations: { neuron: number; synapseIndices: number[] }[] = [];
 
 	/**
-	 * Thinks through the network and updates the values of all nodes
+	 * Thinks through the network and updates the values of all neurons
 	 *
-	 * @param inputs The input values to the network, keyed by their node index
+	 * @param inputs The input values to the network, keyed by their neuron index
 	 */
 	think(inputs: Record<number, number>) {
-		for (const node of this.nodes) {
-			node.value = 0;
+		for (const neuron of this.neurons) {
+			neuron.value = 0;
 		}
 
 		for (const [indexStr, value] of Object.entries(inputs)) {
 			const index = parseInt(indexStr, 10);
 
-			this.nodes[index].value = value;
+			this.neurons[index].value = value;
 		}
 
 		for (const evaluation of this.evaluations) {
-			const node = this.nodes[evaluation.node];
+			const neuron = this.neurons[evaluation.neuron];
 			const inputs = [];
 
 			for (const synapseIndex of evaluation.synapseIndices) {
 				const synapse = this.synapses[synapseIndex];
-				const inputValue = this.nodes[synapse.nodeIn].value;
+				const inputValue = this.neurons[synapse.neuronIn].value;
 
 				inputs.push(inputValue * synapse.weight);
 			}
 
 			const sum = inputs.reduce((a, b) => a + b, 0);
 
-			node.value = activationFunctions[node.activation](
+			neuron.value = activationFunctions[neuron.activation](
 				sum,
-				node.lastInput,
-				node.lastOutput
+				neuron.lastInput,
+				neuron.lastOutput
 			);
 
-			node.lastInput = sum;
-			node.lastOutput = node.value;
+			neuron.lastInput = sum;
+			neuron.lastOutput = neuron.value;
 		}
 	}
 
@@ -65,24 +68,26 @@ export class Brain {
 	 * Creates the internal structure of the network
 	 */
 	private createStructure() {
-		const inputs = this.getInputNodes().map((n) => n.index);
-		const outputs = this.getOutputNodes().map((n) => n.index);
+		const inputs = this.getInputNeurons().map((n) => n.index);
+		const outputs = this.getOutputNeurons().map((n) => n.index);
 		const connections = this.synapses
 			.filter((s) => s.enabled)
-			.map((s) => [s.index, s.nodeIn, s.nodeOut] as [number, number, number]);
+			.map(
+				(s) => [s.index, s.neuronIn, s.neuronOut] as [number, number, number]
+			);
 
 		const layers = calculateLayers(inputs, outputs, connections);
 
-		const links: { node: number; synapseIndices: number[] }[] = [];
+		const links: { neuron: number; synapseIndices: number[] }[] = [];
 
 		for (const layer of layers) {
-			for (const node of layer) {
+			for (const neuron of layer) {
 				const synapseIndices: number[] = connections
-					.filter(([index, left, right]) => right === node)
+					.filter(([index, left, right]) => right === neuron)
 					.map(([index]) => index);
 
 				links.push({
-					node,
+					neuron,
 					synapseIndices,
 				});
 			}
@@ -92,46 +97,46 @@ export class Brain {
 	}
 
 	/**
-	 * Get all nodes without any input synapses
+	 * Get all neurons without any input synapses
 	 *
-	 * @returns The nodes without any input synapses
+	 * @returns The neurons without any input synapses
 	 */
-	private getInputNodes() {
-		return this.nodes.filter((node) =>
-			this.synapses.every((s) => s.nodeOut !== node.index)
+	private getInputNeurons() {
+		return this.neurons.filter((neuron) =>
+			this.synapses.every((s) => s.neuronOut !== neuron.index)
 		);
 	}
 
 	/**
-	 * Get all nodes without any output synapses
+	 * Get all neurons without any output synapses
 	 *
-	 * @returns The nodes without any output synapses
+	 * @returns The neurons without any output synapses
 	 */
-	private getOutputNodes() {
-		return this.nodes.filter((node) =>
-			this.synapses.every((s) => s.nodeIn !== node.index)
+	private getOutputNeurons() {
+		return this.neurons.filter((neuron) =>
+			this.synapses.every((s) => s.neuronIn !== neuron.index)
 		);
 	}
 
 	/**
-	 * Adds a new node to the network
+	 * Adds a new neuron to the network
 	 *
-	 * @param node The node to add
+	 * @param neuron The neuron to add
 	 *
-	 * @returns The index of the node
+	 * @returns The index of the neuron
 	 */
-	addNode(node: NodeCreation) {
-		const index = this.nodes.length;
+	addNeuron(neuron: NeuronCreation) {
+		const index = this.neurons.length;
 
-		const newNode: HasIndex<Node> = {
-			...node,
+		const newNeuron: HasIndex<Neuron> = {
+			...neuron,
 			index,
 			value: 0,
 			lastInput: 0,
 			lastOutput: 0,
 		};
 
-		this.nodes[index] = newNode;
+		this.neurons[index] = newNeuron;
 
 		this.createStructure();
 
@@ -139,71 +144,75 @@ export class Brain {
 	}
 
 	/**
-	 * Gets the value of the node at the given index
+	 * Gets the value of the neuron at the given index
 	 *
-	 * @param index The index of the node
+	 * @param index The index of the neuron
 	 *
-	 * @returns The value of the node
+	 * @returns The value of the neuron
 	 */
-	getNodeValue(index: number) {
-		return this.nodes[index].value;
+	getNeuronValue(index: number) {
+		return this.neurons[index].value;
 	}
 
 	/**
-	 * Inserts a node in the middle of an existing synapse
+	 * Inserts a neuron in the middle of an existing synapse
 	 *
 	 * @param synapseIndex The synapse to insert into
-	 * @param node The node to insert
+	 * @param neuron The neuron to insert
 	 *
-	 * @returns The index of the new node
+	 * @returns The index of the new neuron
 	 */
-	insertNode(synapseIndex: number, node: NodeCreation) {
+	insertNeuron(synapseIndex: number, neuron: NeuronCreation) {
 		const synapse = this.synapses[synapseIndex];
 
-		const newNodeIndex = this.addNode(node);
+		const newNeuronIndex = this.addNeuron(neuron);
 
-		const leftSynapseIndex = this.addSynapse(synapse.nodeIn, newNodeIndex, 1);
+		const leftSynapseIndex = this.addSynapse(
+			synapse.neuronIn,
+			newNeuronIndex,
+			1
+		);
 		const rightSynapseIndex = this.addSynapse(
-			newNodeIndex,
-			synapse.nodeOut,
+			newNeuronIndex,
+			synapse.neuronOut,
 			synapse.weight
 		);
 
 		this.setSynapseEnabled(synapseIndex, false);
 
 		return {
-			node: newNodeIndex,
+			neuron: newNeuronIndex,
 			synapses: [leftSynapseIndex, rightSynapseIndex],
 		};
 	}
 
 	/**
-	 * Sets the activation function of the node at the given index
+	 * Sets the activation function of the neuron at the given index
 	 *
-	 * @param index The index of the node
+	 * @param index The index of the neuron
 	 *
-	 * @param activation The activation function to set the node to
+	 * @param activation The activation function to set the neuron to
 	 */
-	setNodeActivationType(index: number, activation: ActivationFunctionType) {
-		this.nodes[index].activation = activation;
+	setNeuronActivationType(index: number, activation: ActivationFunctionType) {
+		this.neurons[index].activation = activation;
 	}
 
 	/**
 	 * Adds a new synapse to the network
 	 *
-	 * @param nodeIn The index of the input node
-	 * @param nodeOut The index of the output node
+	 * @param neuronIn The index of the input neuron
+	 * @param neuronOut The index of the output neuron
 	 * @param weight The weight of the synapse
 	 *
 	 * @returns The index of the synapse
 	 */
-	addSynapse(nodeIn: number, nodeOut: number, weight: number = 1) {
+	addSynapse(neuronIn: number, neuronOut: number, weight: number = 1) {
 		const index = this.synapses.length;
 
 		const newSynapse: HasIndex<Synapse> = {
 			index,
-			nodeIn,
-			nodeOut,
+			neuronIn,
+			neuronOut,
 			weight,
 			enabled: true,
 		};

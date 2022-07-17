@@ -12,70 +12,70 @@ $ yarn add @shoki/brain
 
 `@shoki/brain` makes it simple to set up a neural network.
 
-You can create a basic 1-1 node network like so:
+You can create a basic 1-1 neuron network like so:
 
 ```ts
 import { Brain, ActivationFunctionType } from "@shoki/brain";
 
-const inputNodeIndex = brain.addNode({
+const inputNeuronIndex = brain.addNeuron({
 	// 1 <-> 1 map from input value to output value
 	activation: ActivationFunctionType.CONSTANT,
 	description: "input",
 });
 
-const outputNodeIndex = brain.addNode({
+const outputNeuronIndex = brain.addNeuron({
 	// 1 <-> 1 map from input value to output value
 	activation: ActivationFunctionType.CONSTANT,
 	description: "output",
 });
 
 // synapse weight is 1 by default
-brain.addSynapse(inputNodeIndex, outputNodeIndex);
+brain.addSynapse(inputNeuronIndex, outputNeuronIndex);
 
 brain.think({
-	[inputNodeIndex]: 1,
+	[inputNeuronIndex]: 1,
 });
 
-brain.getNodeValue(outputNodeIndex); // 1
+brain.getNeuronValue(outputNeuronIndex); // 1
 ```
 
 ![image of 1-1 network](/examples/simple_1_1_network.png)
 
 The input value of `1` has the following journey:
 
-- set to input node (type is `constant`, so it isn't modified)
+- set to input neuron (type is `constant`, so it isn't modified)
 - passed through synapse (weight is `1`, so value is `1 * 1`)
-- set to output node (type is `constant` again, so it isn't modified)
+- set to output neuron (type is `constant` again, so it isn't modified)
 
 ### Activation functions
 
-Activation functions allow you to manipulate a value within a node.
+Activation functions allow you to manipulate a value within a neuron.
 
-Let's see how we can make a node convert negative numbers to positive with the `absolute` activation function.
+Let's see how we can make a neuron convert negative numbers to positive with the `absolute` activation function.
 
 ```ts
 import { Brain, ActivationFunctionType } from "@shoki/brain";
 
-const inputNodeIndex = brain.addNode({
+const inputNeuronIndex = brain.addNeuron({
 	// 1 <-> 1 map from input value to output value
 	activation: ActivationFunctionType.CONSTANT,
 	description: "input",
 });
 
-const outputNodeIndex = brain.addNode({
+const outputNeuronIndex = brain.addNeuron({
 	// Math.abs(input)
 	activation: ActivationFunctionType.ABSOLUTE,
 	description: "output",
 });
 
 // synapse weight is 1 by default
-brain.addSynapse(inputNodeIndex, outputNodeIndex);
+brain.addSynapse(inputNeuronIndex, outputNeuronIndex);
 
 brain.think({
-	[inputNodeIndex]: -1,
+	[inputNeuronIndex]: -1,
 });
 
-brain.getNodeValue(outputNodeIndex); // 1
+brain.getNeuronValue(outputNeuronIndex); // 1
 ```
 
 ![image of 1-1 network](/examples/simple_1_1_network_absolute.png)
@@ -84,30 +84,30 @@ Here you can see how the `absolute` activation type turns the negative input of 
 
 ### Multiple inputs
 
-One node can receive inputs from multiple synapses. The only aggregation function available here at the moment is `sum`.
+One neuron can receive inputs from multiple synapses. The only aggregation function available here at the moment is `sum`.
 
-You can create this simply by binding multiple `addSynapse` calls to the same output node.
+You can create this simply by binding multiple `addSynapse` calls to the same output neuron.
 
 ![image of 2-1 network](/examples/2_1_network.png)
 
-### Hidden nodes
+### Hidden neurons
 
-You can create hidden nodes within the network at any point.
+You can create hidden neurons within the network at any point.
 
-Inputs / outputs are only determined by finding nodes which don't have any input synapses, or output synapses, respectively.
+Inputs / outputs are only determined by finding neurons which don't have any input synapses, or output synapses, respectively.
 
-To insert a node within an existing synapse, you can use `insertNode`.
+To insert a neuron within an existing synapse, you can use `insertNeuron`.
 
 ```ts
-brain.insertNode(synapseIndex, {
+brain.insertNeuron(synapseIndex, {
 	description: "hidden",
 	activation: ActivationFunctionType.ABSOLUTE,
 });
 ```
 
-When inserting a node within a synapse, the right-hand synapse carries the weight from the replaced synapse, while the left-hand synapse is given a weight of `0`.
+When inserting a neuron within a synapse, the right-hand synapse carries the weight from the replaced synapse, while the left-hand synapse is given a weight of `0`.
 
-![hidden inserted node](/examples/hidden_inserted_node.png)
+![hidden inserted neuron](/examples/hidden_inserted_node.png)
 
 ## References
 

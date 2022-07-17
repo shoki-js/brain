@@ -8,4 +8,4 @@ import { ActivationFunction } from "../types";
  * @param input The input value
  * @returns The input value on a hyperbolic tangent curve
  */
-export const tanHNode: ActivationFunction = (input) => Math.tanh(input);
+export const tanHNeuron: ActivationFunction = (input) => Math.tanh(input);

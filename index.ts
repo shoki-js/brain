@@ -1,1 +1,1 @@
-export { Node, Synapse, ActivationFunctionType, Brain } from "./src";
+export { Neuron, Synapse, ActivationFunctionType, Brain } from "./src";

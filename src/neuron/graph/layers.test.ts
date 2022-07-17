@@ -1,13 +1,13 @@
-import { calculateLayers, getRequiredNodes } from "./layers";
+import { calculateLayers, getRequiredNeurons } from "./layers";
 
-describe("getRequiredNodes", () => {
+describe("getRequiredNeurons", () => {
 	describe("when given a simple graph with 1 input and 1 output", () => {
 		const inputIndices = [0];
 		const outputIndices = [1];
 		const connections = [[0, 0, 1]] as [number, number, number][];
 
-		it("should return the required nodes", () => {
-			const required = getRequiredNodes(
+		it("should return the required neurons", () => {
+			const required = getRequiredNeurons(
 				inputIndices,
 				outputIndices,
 				connections
@@ -25,8 +25,8 @@ describe("getRequiredNodes", () => {
 			[1, 1, 2],
 		] as [number, number, number][];
 
-		it("should return the required nodes", () => {
-			const required = getRequiredNodes(
+		it("should return the required neurons", () => {
+			const required = getRequiredNeurons(
 				inputIndices,
 				outputIndices,
 				connections
@@ -47,8 +47,8 @@ describe("getRequiredNodes", () => {
 			[4, 3, 5],
 		] as [number, number, number][];
 
-		it("should return the required nodes", () => {
-			const required = getRequiredNodes(
+		it("should return the required neurons", () => {
+			const required = getRequiredNeurons(
 				inputIndices,
 				outputIndices,
 				connections
@@ -69,8 +69,8 @@ describe("getRequiredNodes", () => {
 			[4, 1, 2],
 		] as [number, number, number][];
 
-		it("should return the required nodes", () => {
-			const required = getRequiredNodes(
+		it("should return the required neurons", () => {
+			const required = getRequiredNeurons(
 				inputIndices,
 				outputIndices,
 				connections
@@ -120,7 +120,7 @@ describe("calculateLayers", () => {
 			[4, 3, 5],
 		] as [number, number, number][];
 
-		it("should return the required nodes", () => {
+		it("should return the required neurons", () => {
 			const layers = calculateLayers(inputIndices, outputIndices, connections);
 
 			expect(Array.from(layers)).toEqual([[3], [4, 5]]);
@@ -138,7 +138,7 @@ describe("calculateLayers", () => {
 			[4, 1, 2],
 		] as [number, number, number][];
 
-		it("should return the required nodes", () => {
+		it("should return the required neurons", () => {
 			const layers = calculateLayers(inputIndices, outputIndices, connections);
 
 			expect(Array.from(layers)).toEqual([[4], [5], [2]]);
@@ -171,7 +171,7 @@ describe("calculateLayers", () => {
 			[19, 10, 13],
 		] as [number, number, number][];
 
-		it("should return the required nodes", () => {
+		it("should return the required neurons", () => {
 			const layers = calculateLayers(inputIndices, outputIndices, connections);
 
 			expect(Array.from(layers)).toEqual([

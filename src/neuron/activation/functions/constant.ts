@@ -6,4 +6,4 @@ import { ActivationFunction } from "../types";
  * @param input The input value
  * @returns The input value
  */
-export const constantNode: ActivationFunction = (input) => input;
+export const constantNeuron: ActivationFunction = (input) => input;

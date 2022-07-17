@@ -1,13 +1,13 @@
 /**
- * Get a list of the nodes which are required to calculate the network
+ * Get a list of the neurons which are required to calculate the network
  *
- * @param inputIndices A list of indices for input nodes
- * @param outputIndices A list of indices for output nodes
- * @param connections A list of [synapseIndex, nodeIn, nodeOut] connections between nodes
+ * @param inputIndices A list of indices for input neurons
+ * @param outputIndices A list of indices for output neurons
+ * @param connections A list of [synapseIndex, neuronIn, neuronOut] connections between neurons
  *
- * @returns A list of indices for required nodes
+ * @returns A list of indices for required neurons
  */
-export function getRequiredNodes(
+export function getRequiredNeurons(
 	inputIndices: number[],
 	outputIndices: number[],
 	connections: [number, number, number][]
@@ -16,24 +16,24 @@ export function getRequiredNodes(
 	let remaining = new Set(outputIndices);
 
 	while (true) {
-		const validNodes = connections
+		const validNeurons = connections
 			.filter(([index, a, b]) => !remaining.has(a) && remaining.has(b))
 			.map(([index, a, b]) => a);
 
-		if (!validNodes.length) {
+		if (!validNeurons.length) {
 			break;
 		}
 
-		const layerNodes = validNodes.filter(
+		const layerNeurons = validNeurons.filter(
 			(index) => !inputIndices.includes(index)
 		);
 
-		if (!layerNodes.length) {
+		if (!layerNeurons.length) {
 			break;
 		}
 
-		required = new Set([...required, ...layerNodes]);
-		remaining = new Set([...remaining, ...validNodes]);
+		required = new Set([...required, ...layerNeurons]);
+		remaining = new Set([...remaining, ...validNeurons]);
 	}
 
 	return required;
@@ -42,18 +42,18 @@ export function getRequiredNodes(
 /**
  * Calculate the parallelisable layers of the graph, based on the given connections
  *
- * @param inputIndices A list of indices for input nodes
- * @param outputIndices A list of indices for output nodes
- * @param connections A list of [synapseIndex, nodeIn, nodeOut] connections between nodes
+ * @param inputIndices A list of indices for input neurons
+ * @param outputIndices A list of indices for output neurons
+ * @param connections A list of [synapseIndex, neuronIn, neuronOut] connections between neurons
  *
- * @returns A list of list of node indices, representing the parallelisable layers
+ * @returns A list of list of neuron indices, representing the parallelisable layers
  */
 export function calculateLayers(
 	inputIndices: number[],
 	outputIndices: number[],
 	connections: [number, number, number][]
 ) {
-	const required = getRequiredNodes(inputIndices, outputIndices, connections);
+	const required = getRequiredNeurons(inputIndices, outputIndices, connections);
 
 	const layers = [];
 
@@ -66,18 +66,18 @@ export function calculateLayers(
 
 		const output = new Set<number>();
 
-		for (const node of candidates) {
-			const isRequired = required.has(node);
+		for (const neuron of candidates) {
+			const isRequired = required.has(neuron);
 
 			const inputConnections = connections.filter(
-				([index, a, b]) => b === node
+				([index, a, b]) => b === neuron
 			);
 			const allInputsRemaining = inputConnections.every(([index, a, b]) =>
 				remaining.has(a)
 			);
 
 			if (isRequired && allInputsRemaining) {
-				output.add(node);
+				output.add(neuron);
 			}
 		}
 

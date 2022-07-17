@@ -1,4 +1,4 @@
 export { Brain } from "./brain";
-export { ActivationFunctionType } from "./node/activation/types";
-export { Node } from "./node/node";
+export { ActivationFunctionType } from "./neuron/activation/types";
+export { Neuron } from "./neuron/neuron";
 export { Synapse } from "./synapse/synapse";

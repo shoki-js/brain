@@ -1,31 +1,31 @@
 import { ActivationFunctionType } from "./activation/types";
 
 // TODO add innovation
-export type Node = {
+export type Neuron = {
 	/**
-	 * The type of activation function to use for this node
+	 * The type of activation function to use for this neuron
 	 */
 	activation: ActivationFunctionType;
 
 	/**
-	 * A description of this node
+	 * A description of this neuron
 	 */
 	description: string;
 
 	/**
-	 * The current value of this node
+	 * The current value of this neuron
 	 */
 	value: number;
 
 	/**
-	 * The last input value of this node
+	 * The last input value of this neuron
 	 *
 	 * This is used for the Differential activation function
 	 */
 	lastInput: number;
 
 	/**
-	 * The last output value of this node
+	 * The last output value of this neuron
 	 *
 	 * This is used for the Latch activation function
 	 */

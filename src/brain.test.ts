@@ -1,5 +1,5 @@
 import { Brain } from "./brain";
-import { ActivationFunctionType } from "./node/activation/types";
+import { ActivationFunctionType } from "./neuron/activation/types";
 
 describe("brain", () => {
 	let brain: Brain;
@@ -9,30 +9,30 @@ describe("brain", () => {
 	});
 
 	describe("with a simple input-output brain", () => {
-		let inputNodeIndex: number;
-		let outputNodeIndex: number;
+		let inputNeuronIndex: number;
+		let outputNeuronIndex: number;
 		let synapseIndex: number;
 
 		beforeEach(() => {
-			inputNodeIndex = brain.addNode({
+			inputNeuronIndex = brain.addNeuron({
 				activation: ActivationFunctionType.CONSTANT,
 				description: "input",
 			});
 
-			outputNodeIndex = brain.addNode({
+			outputNeuronIndex = brain.addNeuron({
 				activation: ActivationFunctionType.CONSTANT,
 				description: "output",
 			});
 
-			synapseIndex = brain.addSynapse(inputNodeIndex, outputNodeIndex);
+			synapseIndex = brain.addSynapse(inputNeuronIndex, outputNeuronIndex);
 		});
 
-		test("should pass node values through correctly", () => {
+		test("should pass neuron values through correctly", () => {
 			brain.think({
-				[inputNodeIndex]: 1,
+				[inputNeuronIndex]: 1,
 			});
 
-			expect(brain.getNodeValue(outputNodeIndex)).toEqual(1);
+			expect(brain.getNeuronValue(outputNeuronIndex)).toEqual(1);
 		});
 
 		describe("with a synapse weight of 4", () => {
@@ -42,39 +42,39 @@ describe("brain", () => {
 
 			test("should apply synapse weight correctly", () => {
 				brain.think({
-					[inputNodeIndex]: 1,
+					[inputNeuronIndex]: 1,
 				});
 
-				expect(brain.getNodeValue(outputNodeIndex)).toEqual(4);
+				expect(brain.getNeuronValue(outputNeuronIndex)).toEqual(4);
 			});
 		});
 
 		describe("with an absolute activation function", () => {
 			beforeEach(() => {
-				brain.setNodeActivationType(
-					outputNodeIndex,
+				brain.setNeuronActivationType(
+					outputNeuronIndex,
 					ActivationFunctionType.ABSOLUTE
 				);
 			});
 
 			test("should apply activation function correctly", () => {
 				brain.think({
-					[inputNodeIndex]: -1,
+					[inputNeuronIndex]: -1,
 				});
 
-				expect(brain.getNodeValue(outputNodeIndex)).toEqual(1);
+				expect(brain.getNeuronValue(outputNeuronIndex)).toEqual(1);
 			});
 		});
 
-		describe("when inserting a new node between the two existing nodes", () => {
+		describe("when inserting a new neuron between the two existing neurons", () => {
 			let leftSynapseIndex: number;
 			let rightSynapseIndex: number;
 
 			beforeEach(() => {
 				const {
 					synapses: [left, right],
-				} = brain.insertNode(synapseIndex, {
-					description: "absolute hidden node",
+				} = brain.insertNeuron(synapseIndex, {
+					description: "absolute hidden neuron",
 					activation: ActivationFunctionType.ABSOLUTE,
 				});
 
@@ -82,12 +82,12 @@ describe("brain", () => {
 				rightSynapseIndex = right;
 			});
 
-			test("should apply hidden node correctly", () => {
+			test("should apply hidden neuron correctly", () => {
 				brain.think({
-					[inputNodeIndex]: -1,
+					[inputNeuronIndex]: -1,
 				});
 
-				expect(brain.getNodeValue(outputNodeIndex)).toEqual(1);
+				expect(brain.getNeuronValue(outputNeuronIndex)).toEqual(1);
 			});
 
 			describe("when the new synapses are set to 0.5", () => {
@@ -96,95 +96,95 @@ describe("brain", () => {
 					brain.setSynapseWeight(rightSynapseIndex, 0.5);
 				});
 
-				test("should apply hidden node correctly", () => {
+				test("should apply hidden neuron correctly", () => {
 					brain.think({
-						[inputNodeIndex]: -1,
+						[inputNeuronIndex]: -1,
 					});
 
-					expect(brain.getNodeValue(outputNodeIndex)).toEqual(0.25);
+					expect(brain.getNeuronValue(outputNeuronIndex)).toEqual(0.25);
 				});
 			});
 		});
 	});
 
-	describe("with a brain connecting two input nodes to an output node", () => {
-		let inputNodeAIndex: number;
+	describe("with a brain connecting two input neurons to an output neuron", () => {
+		let inputNeuronAIndex: number;
 		let synapseAIndex: number;
 
-		let inputNodeBIndex: number;
+		let inputNeuronBIndex: number;
 		let synapseBIndex: number;
 
-		let outputNodeIndex: number;
+		let outputNeuronIndex: number;
 
 		beforeEach(() => {
-			inputNodeAIndex = brain.addNode({
+			inputNeuronAIndex = brain.addNeuron({
 				activation: ActivationFunctionType.CONSTANT,
 				description: "input",
 			});
 
-			inputNodeBIndex = brain.addNode({
+			inputNeuronBIndex = brain.addNeuron({
 				activation: ActivationFunctionType.CONSTANT,
 				description: "input",
 			});
 
-			outputNodeIndex = brain.addNode({
+			outputNeuronIndex = brain.addNeuron({
 				activation: ActivationFunctionType.CONSTANT,
 				description: "output",
 			});
 
-			synapseAIndex = brain.addSynapse(inputNodeAIndex, outputNodeIndex);
-			synapseBIndex = brain.addSynapse(inputNodeBIndex, outputNodeIndex);
+			synapseAIndex = brain.addSynapse(inputNeuronAIndex, outputNeuronIndex);
+			synapseBIndex = brain.addSynapse(inputNeuronBIndex, outputNeuronIndex);
 		});
 
 		test("should add values correctly", () => {
 			brain.think({
-				[inputNodeAIndex]: 1,
-				[inputNodeBIndex]: 1,
+				[inputNeuronAIndex]: 1,
+				[inputNeuronBIndex]: 1,
 			});
 
-			expect(brain.getNodeValue(outputNodeIndex)).toEqual(2);
+			expect(brain.getNeuronValue(outputNeuronIndex)).toEqual(2);
 		});
 
-		describe("when there is a hidden node between the input nodes and the output node", () => {
-			let hiddenNodeIndex: number;
+		describe("when there is a hidden neuron between the input neurons and the output neuron", () => {
+			let hiddenNeuronIndex: number;
 
 			beforeEach(() => {
-				const { node: hiddenNode } = brain.insertNode(synapseAIndex, {
-					description: "hidden node",
+				const { neuron: hiddenNeuron } = brain.insertNeuron(synapseAIndex, {
+					description: "hidden neuron",
 					activation: ActivationFunctionType.CONSTANT,
 				});
 
-				hiddenNodeIndex = hiddenNode;
+				hiddenNeuronIndex = hiddenNeuron;
 
-				brain.addSynapse(inputNodeBIndex, hiddenNodeIndex);
+				brain.addSynapse(inputNeuronBIndex, hiddenNeuronIndex);
 
 				brain.setSynapseEnabled(synapseBIndex, false);
 			});
 
 			test("should add values correctly", () => {
 				brain.think({
-					[inputNodeAIndex]: 1,
-					[inputNodeBIndex]: 1,
+					[inputNeuronAIndex]: 1,
+					[inputNeuronBIndex]: 1,
 				});
 
-				expect(brain.getNodeValue(outputNodeIndex)).toEqual(2);
+				expect(brain.getNeuronValue(outputNeuronIndex)).toEqual(2);
 			});
 
-			describe("when hidden node has a latch activation type", () => {
+			describe("when hidden neuron has a latch activation type", () => {
 				beforeEach(() => {
-					brain.setNodeActivationType(
-						hiddenNodeIndex,
+					brain.setNeuronActivationType(
+						hiddenNeuronIndex,
 						ActivationFunctionType.LATCH
 					);
 				});
 
 				test("should add values correctly", () => {
 					brain.think({
-						[inputNodeAIndex]: 1,
-						[inputNodeBIndex]: 1,
+						[inputNeuronAIndex]: 1,
+						[inputNeuronBIndex]: 1,
 					});
 
-					expect(brain.getNodeValue(outputNodeIndex)).toEqual(1);
+					expect(brain.getNeuronValue(outputNeuronIndex)).toEqual(1);
 				});
 			});
 		});

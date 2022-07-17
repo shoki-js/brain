@@ -1,14 +1,14 @@
 // TODO add innovation
 export type Synapse = {
 	/**
-	 * The index of the input node this synapse is connected to
+	 * The index of the input neuron this synapse is connected to
 	 */
-	nodeIn: number;
+	neuronIn: number;
 
 	/**
-	 * The index of the output node this synapse is connected to
+	 * The index of the output neuron this synapse is connected to
 	 */
-	nodeOut: number;
+	neuronOut: number;
 
 	/**
 	 * The weight of this synapse

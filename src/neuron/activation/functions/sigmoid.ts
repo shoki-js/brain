@@ -8,5 +8,5 @@ import { ActivationFunction } from "../types";
  * @param input The input value
  * @returns The sigmoid of the input value
  */
-export const sigmoidNode: ActivationFunction = (input) =>
+export const sigmoidNeuron: ActivationFunction = (input) =>
 	1 / (1 + Math.E ** (0 - input));

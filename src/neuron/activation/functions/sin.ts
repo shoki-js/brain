@@ -6,4 +6,4 @@ import { ActivationFunction } from "../types";
  * @param input The input value
  * @returns The input value on a sin curve
  */
-export const sineNode: ActivationFunction = (input) => Math.sin(input);
+export const sineNeuron: ActivationFunction = (input) => Math.sin(input);

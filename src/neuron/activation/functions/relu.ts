@@ -6,5 +6,5 @@ import { ActivationFunction } from "../types";
  * @param input The input value
  * @returns The input value capped between 0 and +100
  */
-export const reluNode: ActivationFunction = (input) =>
+export const reluNeuron: ActivationFunction = (input) =>
 	Math.max(Math.min(input, 100), 0);
