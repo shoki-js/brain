@@ -21,6 +21,9 @@ export class Brain {
 	 */
 	evaluations: { node: number; synapseIndices: number[] }[] = [];
 
+	/**
+	 * Creates the internal structure of the network
+	 */
 	private createStructure() {
 		const inputs = this.getInputNodes().map((n) => n.index);
 		const outputs = this.getOutputNodes().map((n) => n.index);
@@ -164,19 +167,6 @@ export class Brain {
 	}
 
 	/**
-	 * Gets the value of the node at the given index
-	 *
-	 * @param index	The index of the node
-	 *
-	 * @param value The value to set the node to
-	 */
-	setValue(index: number, value: number) {
-		// TODO only allow on nodes without any input synapses
-
-		this.nodes[index].value = value;
-	}
-
-	/**
 	 * Sets the weight of the synapse at the given index
 	 *
 	 * @param index The index of the synapse
@@ -216,13 +206,13 @@ export class Brain {
 	 */
 	think(inputs: Record<number, number>) {
 		for (const node of this.nodes) {
-			this.setValue(node.index, 0);
+			node.value = 0;
 		}
 
 		for (const [indexStr, value] of Object.entries(inputs)) {
 			const index = parseInt(indexStr, 10);
 
-			this.setValue(index, value);
+			this.nodes[index].value = value;
 		}
 
 		for (const evaluation of this.evaluations) {
