@@ -1,20 +1,10 @@
-export enum ActivationFunction {
-	CONSTANT = "constant",
-	SIGMOID = "sigmoid",
-	LINEAR = "linear",
-	TANH = "tanh",
-	SIN = "sin",
-	RELU = "relu",
-	GAUSSIAN = "gaussian",
-	LATCH = "latch",
-	DIFF = "diff",
-}
+import { ActivationFunctionType } from "./activation/types";
 
 export type Node = {
 	/**
 	 * The type of activation function to use for this node
 	 */
-	activation: ActivationFunction;
+	activation: ActivationFunctionType;
 
 	/**
 	 * This nodes unique index
