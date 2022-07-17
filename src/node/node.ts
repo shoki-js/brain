@@ -1,22 +1,11 @@
 import { ActivationFunctionType } from "./activation/types";
 
+// TODO add innovation
 export type Node = {
 	/**
 	 * The type of activation function to use for this node
 	 */
 	activation: ActivationFunctionType;
-
-	/**
-	 * This nodes unique index
-	 */
-	index: number;
-
-	/**
-	 * Used to give this node a uniquer identifier based on when it was created.
-	 *
-	 * This can be used to track genes between generations.
-	 */
-	innovation: number;
 
 	/**
 	 * A description of this node

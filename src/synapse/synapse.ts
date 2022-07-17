@@ -1,11 +1,5 @@
+// TODO add innovation
 export type Synapse = {
-	/**
-	 * Used to give this node a uniquer identifier based on when it was created.
-	 *
-	 * This can be used to track genes between generations.
-	 */
-	innovation: number;
-
 	/**
 	 * The index of the input node this synapse is connected to
 	 */
