@@ -254,4 +254,208 @@ describe("brain", () => {
 			});
 		});
 	});
+
+	/**
+	 * A brain with 2 input nodes and 2 output nodes
+	 * with 2 layers of hidden nodes between them
+	 *
+	 * both inputs are connected to both hidden A and B
+	 * both hidden A and B are connected to both hidden C and D
+	 *
+	 * [input A] - - -> [hidden C] - - -> [hidden E] - - -> [output G]
+	 *            \ /               \ /
+	 * [input B] - - -> [hidden D] - - -> [hidden F] - - -> [output H]
+	 *
+	 * All tests below were calculated on paper
+	 */
+	describe("with a large and complex brain with multiple hidden layers", () => {
+		let inputNeuronAIndex: number;
+		let inputNeuronBIndex: number;
+
+		let hiddenNeuronCIndex: number;
+		let hiddenNeuronDIndex: number;
+		let synapseACIndex: number;
+		let synapseBDIndex: number;
+		let synapseADIndex: number;
+		let synapseBCIndex: number;
+
+		let hiddenNeuronEIndex: number;
+		let hiddenNeuronFIndex: number;
+		let synapseCEIndex: number;
+		let synapseDFIndex: number;
+		let synapseCFIndex: number;
+		let synapseDEIndex: number;
+
+		let outputNeuronGIndex: number;
+		let outputNeuronHIndex: number;
+		let synapseEGIndex: number;
+		let synapseFHIndex: number;
+
+		beforeEach(() => {
+			// layer 1
+			inputNeuronAIndex = mutation.addNeuron(genome, {
+				type: "input",
+				activation: ActivationFunctionType.CONSTANT,
+				description: "input",
+			});
+
+			inputNeuronBIndex = mutation.addNeuron(genome, {
+				type: "input",
+				activation: ActivationFunctionType.CONSTANT,
+				description: "input",
+			});
+
+			// layer 2
+
+			hiddenNeuronCIndex = mutation.addNeuron(genome, {
+				type: "hidden",
+				activation: ActivationFunctionType.CONSTANT,
+				description: "hidden",
+			});
+
+			hiddenNeuronDIndex = mutation.addNeuron(genome, {
+				type: "hidden",
+				activation: ActivationFunctionType.CONSTANT,
+				description: "hidden",
+			});
+
+			synapseACIndex = mutation.addSynapse(genome, {
+				neuronIn: inputNeuronAIndex,
+				neuronOut: hiddenNeuronCIndex,
+			});
+
+			synapseBDIndex = mutation.addSynapse(genome, {
+				neuronIn: inputNeuronBIndex,
+				neuronOut: hiddenNeuronDIndex,
+			});
+
+			synapseADIndex = mutation.addSynapse(genome, {
+				neuronIn: inputNeuronAIndex,
+				neuronOut: hiddenNeuronDIndex,
+			});
+
+			synapseBCIndex = mutation.addSynapse(genome, {
+				neuronIn: inputNeuronBIndex,
+				neuronOut: hiddenNeuronCIndex,
+			});
+
+			// layer 3
+
+			hiddenNeuronEIndex = mutation.addNeuron(genome, {
+				type: "hidden",
+				activation: ActivationFunctionType.CONSTANT,
+				description: "hidden",
+			});
+
+			hiddenNeuronFIndex = mutation.addNeuron(genome, {
+				type: "hidden",
+				activation: ActivationFunctionType.CONSTANT,
+				description: "hidden",
+			});
+
+			synapseCEIndex = mutation.addSynapse(genome, {
+				neuronIn: hiddenNeuronCIndex,
+				neuronOut: hiddenNeuronEIndex,
+			});
+
+			synapseDFIndex = mutation.addSynapse(genome, {
+				neuronIn: hiddenNeuronDIndex,
+				neuronOut: hiddenNeuronFIndex,
+			});
+
+			synapseCFIndex = mutation.addSynapse(genome, {
+				neuronIn: hiddenNeuronCIndex,
+				neuronOut: hiddenNeuronFIndex,
+			});
+
+			synapseDEIndex = mutation.addSynapse(genome, {
+				neuronIn: hiddenNeuronDIndex,
+				neuronOut: hiddenNeuronEIndex,
+			});
+
+			// output layer
+
+			outputNeuronGIndex = mutation.addNeuron(genome, {
+				type: "output",
+				activation: ActivationFunctionType.CONSTANT,
+				description: "output",
+			});
+
+			outputNeuronHIndex = mutation.addNeuron(genome, {
+				type: "output",
+				activation: ActivationFunctionType.CONSTANT,
+				description: "output",
+			});
+
+			synapseEGIndex = mutation.addSynapse(genome, {
+				neuronIn: hiddenNeuronEIndex,
+				neuronOut: outputNeuronGIndex,
+			});
+
+			synapseFHIndex = mutation.addSynapse(genome, {
+				neuronIn: hiddenNeuronFIndex,
+				neuronOut: outputNeuronHIndex,
+			});
+		});
+
+		describe("when both inputs are positive", () => {
+			let inputs: Record<number, number>;
+
+			beforeEach(() => {
+				inputs = {
+					[inputNeuronAIndex]: 1,
+					[inputNeuronBIndex]: 1,
+				};
+			});
+
+			test("should resolve the correct output values", () => {
+				const brain = new Brain(genome);
+
+				brain.think(inputs);
+
+				expect(brain.getNeuronValue(outputNeuronGIndex)).toEqual(4);
+				expect(brain.getNeuronValue(outputNeuronHIndex)).toEqual(4);
+			});
+		});
+
+		describe("when both inputs are negative", () => {
+			let inputs: Record<number, number>;
+
+			beforeEach(() => {
+				inputs = {
+					[inputNeuronAIndex]: -1,
+					[inputNeuronBIndex]: -1,
+				};
+			});
+
+			test("should resolve the correct output values", () => {
+				const brain = new Brain(genome);
+
+				brain.think(inputs);
+
+				expect(brain.getNeuronValue(outputNeuronGIndex)).toEqual(-4);
+				expect(brain.getNeuronValue(outputNeuronHIndex)).toEqual(-4);
+			});
+		});
+
+		describe("when one input is negative", () => {
+			let inputs: Record<number, number>;
+
+			beforeEach(() => {
+				inputs = {
+					[inputNeuronAIndex]: 1,
+					[inputNeuronBIndex]: -1,
+				};
+			});
+
+			test("should resolve the correct output values", () => {
+				const brain = new Brain(genome);
+
+				brain.think(inputs);
+
+				expect(brain.getNeuronValue(outputNeuronGIndex)).toEqual(0);
+				expect(brain.getNeuronValue(outputNeuronHIndex)).toEqual(0);
+			});
+		});
+	});
 });
