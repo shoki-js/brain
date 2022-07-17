@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"experimentalDecorators": true,
+		"esModuleInterop": true,
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"lib": ["es2017", "dom"],
+		"downlevelIteration": true,
+		"strict": true,
+		"types": ["node", "jest"],
+		"allowSyntheticDefaultImports": true
+	}
+}

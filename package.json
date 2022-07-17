@@ -1,0 +1,23 @@
+{
+	"name": "@shoki/brain",
+	"version": "0.0.1",
+	"description": "feedforward neural network",
+	"main": "index.js",
+	"repository": "git@github.com:shoki-js/brain.git",
+	"author": "James Monger <jameskmonger@hotmail.co.uk>",
+	"license": "MIT",
+	"scripts": {
+		"build": "tsc",
+		"test": "jest",
+		"prettier": "prettier -w ./"
+	},
+	"devDependencies": {
+		"@trivago/prettier-plugin-sort-imports": "^3.2.0",
+		"@types/jest": "^28.1.6",
+		"@types/node": "^18.0.5",
+		"eslint": "^8.20.0",
+		"jest": "^28.1.3",
+		"prettier": "^2.7.1",
+		"typescript": "^4.7.4"
+	}
+}
