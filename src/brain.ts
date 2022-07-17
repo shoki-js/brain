@@ -21,11 +21,6 @@ export class Brain {
 	 */
 	evaluations: { node: number; synapseIndices: number[] }[] = [];
 
-	/**
-	 * Map of node index -> [synapse indices]
-	 */
-	targetNodes: Map<number, number[]> = new Map();
-
 	private createStructure() {
 		const inputs = this.getInputNodes().map((n) => n.index);
 		const outputs = this.getOutputNodes().map((n) => n.index);
