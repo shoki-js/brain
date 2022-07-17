@@ -67,17 +67,20 @@ describe("brain", () => {
 		});
 
 		describe("when inserting a new neuron between the two existing neurons", () => {
+			let hiddenNeuronIndex: number;
 			let leftSynapseIndex: number;
 			let rightSynapseIndex: number;
 
 			beforeEach(() => {
 				const {
+					neuron,
 					synapses: [left, right],
 				} = brain.insertNeuron(synapseIndex, {
 					description: "absolute hidden neuron",
 					activation: ActivationFunctionType.ABSOLUTE,
 				});
 
+				hiddenNeuronIndex = neuron;
 				leftSynapseIndex = left;
 				rightSynapseIndex = right;
 			});
@@ -103,6 +106,17 @@ describe("brain", () => {
 
 					expect(brain.getNeuronValue(outputNeuronIndex)).toEqual(0.25);
 				});
+			});
+
+			test("removeNeuron should remove the neuron and its synapses", () => {
+				brain.removeNeuron(hiddenNeuronIndex);
+
+				brain.think({
+					[inputNeuronIndex]: -1,
+				});
+
+				// output now has no link to it
+				expect(brain.getNeuronValue(outputNeuronIndex)).toEqual(0);
 			});
 		});
 	});
