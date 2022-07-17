@@ -1,11 +1,12 @@
 import { Brain } from "./brain";
+import { createGenome, Genome, mutation } from "./genome";
 import { ActivationFunctionType } from "./neuron/activation/types";
 
 describe("brain", () => {
-	let brain: Brain;
+	let genome: Genome;
 
 	beforeEach(() => {
-		brain = new Brain();
+		genome = createGenome();
 	});
 
 	describe("with a simple input-output brain", () => {
@@ -14,20 +15,25 @@ describe("brain", () => {
 		let synapseIndex: number;
 
 		beforeEach(() => {
-			inputNeuronIndex = brain.addNeuron({
+			inputNeuronIndex = mutation.addNeuron(genome, {
 				activation: ActivationFunctionType.CONSTANT,
 				description: "input",
 			});
 
-			outputNeuronIndex = brain.addNeuron({
+			outputNeuronIndex = mutation.addNeuron(genome, {
 				activation: ActivationFunctionType.CONSTANT,
 				description: "output",
 			});
 
-			synapseIndex = brain.addSynapse(inputNeuronIndex, outputNeuronIndex);
+			synapseIndex = mutation.addSynapse(genome, {
+				neuronIn: inputNeuronIndex,
+				neuronOut: outputNeuronIndex,
+			});
 		});
 
 		test("should pass neuron values through correctly", () => {
+			const brain = new Brain(genome);
+
 			brain.think({
 				[inputNeuronIndex]: 1,
 			});
@@ -37,10 +43,12 @@ describe("brain", () => {
 
 		describe("with a synapse weight of 4", () => {
 			beforeEach(() => {
-				brain.setSynapseWeight(synapseIndex, 4);
+				mutation.setSynapseWeight(genome, { index: synapseIndex, weight: 4 });
 			});
 
 			test("should apply synapse weight correctly", () => {
+				const brain = new Brain(genome);
+
 				brain.think({
 					[inputNeuronIndex]: 1,
 				});
@@ -51,13 +59,15 @@ describe("brain", () => {
 
 		describe("with an absolute activation function", () => {
 			beforeEach(() => {
-				brain.setNeuronActivationType(
-					outputNeuronIndex,
-					ActivationFunctionType.ABSOLUTE
-				);
+				mutation.setNeuronActivationType(genome, {
+					index: outputNeuronIndex,
+					activation: ActivationFunctionType.ABSOLUTE,
+				});
 			});
 
 			test("should apply activation function correctly", () => {
+				const brain = new Brain(genome);
+
 				brain.think({
 					[inputNeuronIndex]: -1,
 				});
@@ -75,9 +85,12 @@ describe("brain", () => {
 				const {
 					neuron,
 					synapses: [left, right],
-				} = brain.insertNeuron(synapseIndex, {
-					description: "absolute hidden neuron",
-					activation: ActivationFunctionType.ABSOLUTE,
+				} = mutation.insertNeuron(genome, {
+					synapseIndex,
+					neuron: {
+						description: "absolute hidden neuron",
+						activation: ActivationFunctionType.ABSOLUTE,
+					},
 				});
 
 				hiddenNeuronIndex = neuron;
@@ -86,6 +99,8 @@ describe("brain", () => {
 			});
 
 			test("should apply hidden neuron correctly", () => {
+				const brain = new Brain(genome);
+
 				brain.think({
 					[inputNeuronIndex]: -1,
 				});
@@ -95,11 +110,19 @@ describe("brain", () => {
 
 			describe("when the new synapses are set to 0.5", () => {
 				beforeEach(() => {
-					brain.setSynapseWeight(leftSynapseIndex, 0.5);
-					brain.setSynapseWeight(rightSynapseIndex, 0.5);
+					mutation.setSynapseWeight(genome, {
+						index: leftSynapseIndex,
+						weight: 0.5,
+					});
+					mutation.setSynapseWeight(genome, {
+						index: rightSynapseIndex,
+						weight: 0.5,
+					});
 				});
 
 				test("should apply hidden neuron correctly", () => {
+					const brain = new Brain(genome);
+
 					brain.think({
 						[inputNeuronIndex]: -1,
 					});
@@ -109,7 +132,9 @@ describe("brain", () => {
 			});
 
 			test("removeNeuron should remove the neuron and its synapses", () => {
-				brain.removeNeuron(hiddenNeuronIndex);
+				mutation.removeNeuron(genome, { index: hiddenNeuronIndex });
+
+				const brain = new Brain(genome);
 
 				brain.think({
 					[inputNeuronIndex]: -1,
@@ -131,26 +156,34 @@ describe("brain", () => {
 		let outputNeuronIndex: number;
 
 		beforeEach(() => {
-			inputNeuronAIndex = brain.addNeuron({
+			inputNeuronAIndex = mutation.addNeuron(genome, {
 				activation: ActivationFunctionType.CONSTANT,
 				description: "input",
 			});
 
-			inputNeuronBIndex = brain.addNeuron({
+			inputNeuronBIndex = mutation.addNeuron(genome, {
 				activation: ActivationFunctionType.CONSTANT,
 				description: "input",
 			});
 
-			outputNeuronIndex = brain.addNeuron({
+			outputNeuronIndex = mutation.addNeuron(genome, {
 				activation: ActivationFunctionType.CONSTANT,
 				description: "output",
 			});
 
-			synapseAIndex = brain.addSynapse(inputNeuronAIndex, outputNeuronIndex);
-			synapseBIndex = brain.addSynapse(inputNeuronBIndex, outputNeuronIndex);
+			synapseAIndex = mutation.addSynapse(genome, {
+				neuronIn: inputNeuronAIndex,
+				neuronOut: outputNeuronIndex,
+			});
+			synapseBIndex = mutation.addSynapse(genome, {
+				neuronIn: inputNeuronBIndex,
+				neuronOut: outputNeuronIndex,
+			});
 		});
 
 		test("should add values correctly", () => {
+			const brain = new Brain(genome);
+
 			brain.think({
 				[inputNeuronAIndex]: 1,
 				[inputNeuronBIndex]: 1,
@@ -163,19 +196,30 @@ describe("brain", () => {
 			let hiddenNeuronIndex: number;
 
 			beforeEach(() => {
-				const { neuron: hiddenNeuron } = brain.insertNeuron(synapseAIndex, {
-					description: "hidden neuron",
-					activation: ActivationFunctionType.CONSTANT,
+				const { neuron: hiddenNeuron } = mutation.insertNeuron(genome, {
+					synapseIndex: synapseAIndex,
+					neuron: {
+						description: "hidden neuron",
+						activation: ActivationFunctionType.CONSTANT,
+					},
 				});
 
 				hiddenNeuronIndex = hiddenNeuron;
 
-				brain.addSynapse(inputNeuronBIndex, hiddenNeuronIndex);
+				mutation.addSynapse(genome, {
+					neuronIn: inputNeuronBIndex,
+					neuronOut: hiddenNeuronIndex,
+				});
 
-				brain.setSynapseEnabled(synapseBIndex, false);
+				mutation.setSynapseEnabled(genome, {
+					index: synapseBIndex,
+					enabled: false,
+				});
 			});
 
 			test("should add values correctly", () => {
+				const brain = new Brain(genome);
+
 				brain.think({
 					[inputNeuronAIndex]: 1,
 					[inputNeuronBIndex]: 1,
@@ -186,13 +230,15 @@ describe("brain", () => {
 
 			describe("when hidden neuron has a latch activation type", () => {
 				beforeEach(() => {
-					brain.setNeuronActivationType(
-						hiddenNeuronIndex,
-						ActivationFunctionType.LATCH
-					);
+					mutation.setNeuronActivationType(genome, {
+						index: hiddenNeuronIndex,
+						activation: ActivationFunctionType.LATCH,
+					});
 				});
 
 				test("should add values correctly", () => {
+					const brain = new Brain(genome);
+
 					brain.think({
 						[inputNeuronAIndex]: 1,
 						[inputNeuronBIndex]: 1,

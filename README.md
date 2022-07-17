@@ -12,25 +12,37 @@ $ yarn add @shoki/brain
 
 `@shoki/brain` makes it simple to set up a neural network.
 
+### Genome
+
+A Brain is created from a Genome. A Genome represents the "physical" structure of the brain.
+
 You can create a basic 1-1 neuron network like so:
 
 ```ts
-import { Brain, ActivationFunctionType } from "@shoki/brain";
+import { createGenome, mutation, Brain } from "@shoki/brain";
 
-const inputNeuronIndex = brain.addNeuron({
+const genome = createGenome();
+
+const inputNeuronIndex = mutation.addNeuron(genome, {
 	// 1 <-> 1 map from input value to output value
 	activation: ActivationFunctionType.CONSTANT,
 	description: "input",
 });
 
-const outputNeuronIndex = brain.addNeuron({
+const outputNeuronIndex = mutation.addNeuron(genome, {
 	// 1 <-> 1 map from input value to output value
 	activation: ActivationFunctionType.CONSTANT,
 	description: "output",
 });
 
 // synapse weight is 1 by default
-brain.addSynapse(inputNeuronIndex, outputNeuronIndex);
+mutation.addSynapse(genome, {
+	neuronIn: inputNeuronIndex,
+	neuronOut: outputNeuronIndex,
+	weight: 1,
+});
+
+const brain = new Brain(genome);
 
 brain.think({
 	[inputNeuronIndex]: 1,
@@ -54,22 +66,30 @@ Activation functions allow you to manipulate a value within a neuron.
 Let's see how we can make a neuron convert negative numbers to positive with the `absolute` activation function.
 
 ```ts
-import { Brain, ActivationFunctionType } from "@shoki/brain";
+import { createGenome, mutation, Brain } from "@shoki/brain";
 
-const inputNeuronIndex = brain.addNeuron({
+const genome = createGenome();
+
+const inputNeuronIndex = mutation.addNeuron(genome, {
 	// 1 <-> 1 map from input value to output value
 	activation: ActivationFunctionType.CONSTANT,
 	description: "input",
 });
 
-const outputNeuronIndex = brain.addNeuron({
-	// Math.abs(input)
+const outputNeuronIndex = mutation.addNeuron(genome, {
+	// 1 <-> 1 map from input value to output value
 	activation: ActivationFunctionType.ABSOLUTE,
 	description: "output",
 });
 
 // synapse weight is 1 by default
-brain.addSynapse(inputNeuronIndex, outputNeuronIndex);
+mutation.addSynapse(genome, {
+	neuronIn: inputNeuronIndex,
+	neuronOut: outputNeuronIndex,
+	weight: 1,
+});
+
+const brain = new Brain(genome);
 
 brain.think({
 	[inputNeuronIndex]: -1,
@@ -99,9 +119,12 @@ Inputs / outputs are only determined by finding neurons which don't have any inp
 To insert a neuron within an existing synapse, you can use `insertNeuron`.
 
 ```ts
-brain.insertNeuron(synapseIndex, {
-	description: "hidden",
-	activation: ActivationFunctionType.ABSOLUTE,
+mutation.insertNeuron(genome, {
+	synapseIndex,
+	neuron: {
+		description: "hidden",
+		activation: ActivationFunctionType.ABSOLUTE,
+	},
 });
 ```
 

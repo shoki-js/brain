@@ -1,0 +1,1 @@
+export { Synapse } from "./synapse";
