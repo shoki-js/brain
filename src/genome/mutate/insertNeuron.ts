@@ -5,7 +5,7 @@ import { setSynapseEnabled } from "./setSynapseEnabled";
 
 type NeuronInsertionPayload = {
 	synapseIndex: number;
-	neuron: AddNeuronPayload;
+	neuron: Omit<AddNeuronPayload, "type">;
 };
 
 /**
@@ -27,7 +27,10 @@ export function insertNeuron(
 		throw Error(`Could not find synapse with index ${synapseIndex}`);
 	}
 
-	const newNeuronIndex = addNeuron(genome, neuron);
+	const newNeuronIndex = addNeuron(genome, {
+		...neuron,
+		type: "hidden",
+	});
 
 	const leftSynapseIndex = addSynapse(genome, {
 		neuronIn: synapse.neuronIn,

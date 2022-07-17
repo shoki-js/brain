@@ -16,11 +16,13 @@ describe("brain", () => {
 
 		beforeEach(() => {
 			inputNeuronIndex = mutation.addNeuron(genome, {
+				type: "input",
 				activation: ActivationFunctionType.CONSTANT,
 				description: "input",
 			});
 
 			outputNeuronIndex = mutation.addNeuron(genome, {
+				type: "output",
 				activation: ActivationFunctionType.CONSTANT,
 				description: "output",
 			});
@@ -157,16 +159,19 @@ describe("brain", () => {
 
 		beforeEach(() => {
 			inputNeuronAIndex = mutation.addNeuron(genome, {
+				type: "input",
 				activation: ActivationFunctionType.CONSTANT,
 				description: "input",
 			});
 
 			inputNeuronBIndex = mutation.addNeuron(genome, {
+				type: "input",
 				activation: ActivationFunctionType.CONSTANT,
 				description: "input",
 			});
 
 			outputNeuronIndex = mutation.addNeuron(genome, {
+				type: "output",
 				activation: ActivationFunctionType.CONSTANT,
 				description: "output",
 			});

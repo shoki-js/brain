@@ -4,6 +4,7 @@ import { HasIndex } from "../../types";
 import { Genome } from "../types";
 
 export type AddNeuronPayload = {
+	type: "input" | "output" | "hidden";
 	activation: ActivationFunctionType;
 	description: string;
 };

@@ -3,6 +3,11 @@ import { ActivationFunctionType } from "./activation/types";
 // TODO add innovation
 export type Neuron = {
 	/**
+	 * The type of Neuron
+	 */
+	type: "input" | "output" | "hidden";
+
+	/**
 	 * The type of activation function to use for this neuron
 	 */
 	activation: ActivationFunctionType;

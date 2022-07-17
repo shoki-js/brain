@@ -24,12 +24,14 @@ import { createGenome, mutation, Brain } from "@shoki/brain";
 const genome = createGenome();
 
 const inputNeuronIndex = mutation.addNeuron(genome, {
+	type: "input",
 	// 1 <-> 1 map from input value to output value
 	activation: ActivationFunctionType.CONSTANT,
 	description: "input",
 });
 
 const outputNeuronIndex = mutation.addNeuron(genome, {
+	type: "output",
 	// 1 <-> 1 map from input value to output value
 	activation: ActivationFunctionType.CONSTANT,
 	description: "output",
@@ -71,12 +73,14 @@ import { createGenome, mutation, Brain } from "@shoki/brain";
 const genome = createGenome();
 
 const inputNeuronIndex = mutation.addNeuron(genome, {
+	type: "input",
 	// 1 <-> 1 map from input value to output value
 	activation: ActivationFunctionType.CONSTANT,
 	description: "input",
 });
 
 const outputNeuronIndex = mutation.addNeuron(genome, {
+	type: "output",
 	// 1 <-> 1 map from input value to output value
 	activation: ActivationFunctionType.ABSOLUTE,
 	description: "output",

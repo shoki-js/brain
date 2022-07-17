@@ -1,6 +1,6 @@
 {
 	"name": "@shoki/brain",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"description": "feedforward neural network",
 	"main": "index.js",
 	"repository": "git@github.com:shoki-js/brain.git",
