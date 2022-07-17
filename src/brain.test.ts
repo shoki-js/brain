@@ -457,5 +457,90 @@ describe("brain", () => {
 				expect(brain.getNeuronValue(outputNeuronHIndex)).toEqual(0);
 			});
 		});
+
+		describe("when one side of synapses are weighted to 0.5", () => {
+			beforeEach(() => {
+				mutation.setSynapseWeight(genome, {
+					index: synapseACIndex,
+					weight: 0.5,
+				});
+				mutation.setSynapseWeight(genome, {
+					index: synapseADIndex,
+					weight: 0.5,
+				});
+				mutation.setSynapseWeight(genome, {
+					index: synapseCEIndex,
+					weight: 0.5,
+				});
+				mutation.setSynapseWeight(genome, {
+					index: synapseCFIndex,
+					weight: 0.5,
+				});
+				mutation.setSynapseWeight(genome, {
+					index: synapseEGIndex,
+					weight: 0.5,
+				});
+			});
+
+			describe("when both inputs are positive", () => {
+				let inputs: Record<number, number>;
+
+				beforeEach(() => {
+					inputs = {
+						[inputNeuronAIndex]: 1,
+						[inputNeuronBIndex]: 1,
+					};
+				});
+
+				test("should resolve the correct output values", () => {
+					const brain = new Brain(genome);
+
+					brain.think(inputs);
+
+					expect(brain.getNeuronValue(outputNeuronGIndex)).toEqual(1.125);
+					expect(brain.getNeuronValue(outputNeuronHIndex)).toEqual(2.25);
+				});
+			});
+
+			describe("when both inputs are negative", () => {
+				let inputs: Record<number, number>;
+
+				beforeEach(() => {
+					inputs = {
+						[inputNeuronAIndex]: -1,
+						[inputNeuronBIndex]: -1,
+					};
+				});
+
+				test("should resolve the correct output values", () => {
+					const brain = new Brain(genome);
+
+					brain.think(inputs);
+
+					expect(brain.getNeuronValue(outputNeuronGIndex)).toEqual(-1.125);
+					expect(brain.getNeuronValue(outputNeuronHIndex)).toEqual(-2.25);
+				});
+			});
+
+			describe("when one input is negative", () => {
+				let inputs: Record<number, number>;
+
+				beforeEach(() => {
+					inputs = {
+						[inputNeuronAIndex]: 1,
+						[inputNeuronBIndex]: -1,
+					};
+				});
+
+				test("should resolve the correct output values", () => {
+					const brain = new Brain(genome);
+
+					brain.think(inputs);
+
+					expect(brain.getNeuronValue(outputNeuronGIndex)).toEqual(-0.375);
+					expect(brain.getNeuronValue(outputNeuronHIndex)).toEqual(-0.75);
+				});
+			});
+		});
 	});
 });
