@@ -4,7 +4,7 @@ describe("getRequiredNodes", () => {
 	describe("when given a simple graph with 1 input and 1 output", () => {
 		const inputIndices = [0];
 		const outputIndices = [1];
-		const connections = [[0, 1]] as [number, number][];
+		const connections = [[0, 0, 1]] as [number, number, number][];
 
 		it("should return the required nodes", () => {
 			const required = getRequiredNodes(
@@ -21,9 +21,9 @@ describe("getRequiredNodes", () => {
 		const inputIndices = [0, 1];
 		const outputIndices = [2];
 		const connections = [
-			[0, 2],
-			[1, 2],
-		] as [number, number][];
+			[0, 0, 2],
+			[1, 1, 2],
+		] as [number, number, number][];
 
 		it("should return the required nodes", () => {
 			const required = getRequiredNodes(
@@ -40,12 +40,12 @@ describe("getRequiredNodes", () => {
 		const inputIndices = [0, 1, 2];
 		const outputIndices = [3, 4, 5];
 		const connections = [
-			[0, 3],
-			[1, 3],
-			[2, 3],
-			[3, 4],
-			[3, 5],
-		] as [number, number][];
+			[0, 0, 3],
+			[1, 1, 3],
+			[2, 2, 3],
+			[3, 3, 4],
+			[4, 3, 5],
+		] as [number, number, number][];
 
 		it("should return the required nodes", () => {
 			const required = getRequiredNodes(
@@ -62,12 +62,12 @@ describe("getRequiredNodes", () => {
 		const inputIndices = [0, 1];
 		const outputIndices = [2, 3];
 		const connections = [
-			[0, 4],
-			[4, 5],
-			[5, 2],
-			[4, 2],
-			[1, 2],
-		] as [number, number][];
+			[0, 0, 4],
+			[1, 4, 5],
+			[2, 5, 2],
+			[3, 4, 2],
+			[4, 1, 2],
+		] as [number, number, number][];
 
 		it("should return the required nodes", () => {
 			const required = getRequiredNodes(
@@ -85,7 +85,7 @@ describe("calculateLayers", () => {
 	describe("when given a simple graph with 1 input and 1 output", () => {
 		const inputIndices = [0];
 		const outputIndices = [1];
-		const connections = [[0, 1]] as [number, number][];
+		const connections = [[0, 0, 1]] as [number, number, number][];
 
 		it("should return the correct layers", () => {
 			const layers = calculateLayers(inputIndices, outputIndices, connections);
@@ -98,9 +98,9 @@ describe("calculateLayers", () => {
 		const inputIndices = [0, 1];
 		const outputIndices = [2];
 		const connections = [
-			[0, 2],
-			[1, 2],
-		] as [number, number][];
+			[0, 0, 2],
+			[1, 1, 2],
+		] as [number, number, number][];
 
 		it("should return the correct layers", () => {
 			const layers = calculateLayers(inputIndices, outputIndices, connections);
@@ -113,12 +113,12 @@ describe("calculateLayers", () => {
 		const inputIndices = [0, 1, 2];
 		const outputIndices = [3, 4, 5];
 		const connections = [
-			[0, 3],
-			[1, 3],
-			[2, 3],
-			[3, 4],
-			[3, 5],
-		] as [number, number][];
+			[0, 0, 3],
+			[1, 1, 3],
+			[2, 2, 3],
+			[3, 3, 4],
+			[4, 3, 5],
+		] as [number, number, number][];
 
 		it("should return the required nodes", () => {
 			const layers = calculateLayers(inputIndices, outputIndices, connections);
@@ -131,12 +131,12 @@ describe("calculateLayers", () => {
 		const inputIndices = [0, 1];
 		const outputIndices = [2, 3];
 		const connections = [
-			[0, 4],
-			[4, 5],
-			[5, 2],
-			[4, 2],
-			[1, 2],
-		] as [number, number][];
+			[0, 0, 4],
+			[1, 4, 5],
+			[2, 5, 2],
+			[3, 4, 2],
+			[4, 1, 2],
+		] as [number, number, number][];
 
 		it("should return the required nodes", () => {
 			const layers = calculateLayers(inputIndices, outputIndices, connections);
@@ -149,27 +149,27 @@ describe("calculateLayers", () => {
 		const inputIndices = [0, 1, 2, 3];
 		const outputIndices = [11, 12, 13];
 		const connections = [
-			[0, 4],
-			[1, 4],
-			[1, 5],
-			[2, 5],
-			[2, 6],
-			[3, 6],
-			[3, 7],
-			[4, 8],
-			[5, 8],
-			[5, 9],
-			[5, 10],
-			[6, 10],
-			[6, 7],
-			[8, 11],
-			[8, 12],
-			[8, 9],
-			[9, 10],
-			[7, 10],
-			[10, 12],
-			[10, 13],
-		] as [number, number][];
+			[0, 0, 4],
+			[1, 1, 4],
+			[2, 1, 5],
+			[3, 2, 5],
+			[4, 2, 6],
+			[5, 3, 6],
+			[6, 3, 7],
+			[7, 4, 8],
+			[8, 5, 8],
+			[9, 5, 9],
+			[10, 5, 10],
+			[11, 6, 10],
+			[12, 6, 7],
+			[13, 8, 11],
+			[14, 8, 12],
+			[15, 8, 9],
+			[16, 9, 10],
+			[17, 7, 10],
+			[18, 10, 12],
+			[19, 10, 13],
+		] as [number, number, number][];
 
 		it("should return the required nodes", () => {
 			const layers = calculateLayers(inputIndices, outputIndices, connections);

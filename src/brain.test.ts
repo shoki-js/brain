@@ -25,12 +25,12 @@ describe("brain", () => {
 			});
 
 			synapseIndex = brain.addSynapse(inputNodeIndex, outputNodeIndex);
-
-			brain.setValue(inputNodeIndex, 1);
 		});
 
 		test("should pass node values through correctly", () => {
-			brain.think();
+			brain.think({
+				[inputNodeIndex]: 1,
+			});
 
 			expect(brain.getValue(outputNodeIndex)).toEqual(1);
 		});
@@ -41,7 +41,9 @@ describe("brain", () => {
 			});
 
 			test("should apply synapse weight correctly", () => {
-				brain.think();
+				brain.think({
+					[inputNodeIndex]: 1,
+				});
 
 				expect(brain.getValue(outputNodeIndex)).toEqual(4);
 			});
@@ -56,9 +58,9 @@ describe("brain", () => {
 			});
 
 			test("should apply activation function correctly", () => {
-				brain.setValue(inputNodeIndex, -1);
-
-				brain.think();
+				brain.think({
+					[inputNodeIndex]: -1,
+				});
 
 				expect(brain.getValue(outputNodeIndex)).toEqual(1);
 			});
@@ -81,12 +83,9 @@ describe("brain", () => {
 			});
 
 			test("should apply hidden node correctly", () => {
-				brain.setValue(inputNodeIndex, -1);
-
-				// think twice because the hidden node needs its value updated as well
-				// TODO consider a better solution...
-				brain.think();
-				brain.think();
+				brain.think({
+					[inputNodeIndex]: -1,
+				});
 
 				expect(brain.getValue(outputNodeIndex)).toEqual(1);
 			});
@@ -98,12 +97,9 @@ describe("brain", () => {
 				});
 
 				test("should apply hidden node correctly", () => {
-					brain.setValue(inputNodeIndex, -1);
-
-					// think twice because the hidden node needs its value updated as well
-					// TODO consider a better solution...
-					brain.think();
-					brain.think();
+					brain.think({
+						[inputNodeIndex]: -1,
+					});
 
 					expect(brain.getValue(outputNodeIndex)).toEqual(0.25);
 				});
@@ -138,13 +134,13 @@ describe("brain", () => {
 
 			synapseAIndex = brain.addSynapse(inputNodeAIndex, outputNodeIndex);
 			synapseBIndex = brain.addSynapse(inputNodeBIndex, outputNodeIndex);
-
-			brain.setValue(inputNodeAIndex, 1);
-			brain.setValue(inputNodeBIndex, 1);
 		});
 
 		test("should add values correctly", () => {
-			brain.think();
+			brain.think({
+				[inputNodeAIndex]: 1,
+				[inputNodeBIndex]: 1,
+			});
 
 			expect(brain.getValue(outputNodeIndex)).toEqual(2);
 		});
@@ -166,10 +162,10 @@ describe("brain", () => {
 			});
 
 			test("should add values correctly", () => {
-				// think twice to allow for hidden layers
-				// TODO fix this
-				brain.think();
-				brain.think();
+				brain.think({
+					[inputNodeAIndex]: 1,
+					[inputNodeBIndex]: 1,
+				});
 
 				expect(brain.getValue(outputNodeIndex)).toEqual(2);
 			});
@@ -183,10 +179,10 @@ describe("brain", () => {
 				});
 
 				test("should add values correctly", () => {
-					// think twice to allow for hidden layers
-					// TODO fix this
-					brain.think();
-					brain.think();
+					brain.think({
+						[inputNodeAIndex]: 1,
+						[inputNodeBIndex]: 1,
+					});
 
 					expect(brain.getValue(outputNodeIndex)).toEqual(1);
 				});

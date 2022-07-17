@@ -1,4 +1,5 @@
 import { activationFunctions, ActivationFunctionType } from "./node/activation";
+import { calculateLayers } from "./node/graph/layers";
 import { Node } from "./node/node";
 import { Synapse } from "./synapse/synapse";
 
@@ -16,24 +17,62 @@ export class Brain {
 	synapses: HasIndex<Synapse>[] = [];
 
 	/**
+	 * Nodes to evaluate
+	 */
+	evaluations: { node: number; synapseIndices: number[] }[] = [];
+
+	/**
 	 * Map of node index -> [synapse indices]
 	 */
 	targetNodes: Map<number, number[]> = new Map();
 
 	private createStructure() {
-		this.targetNodes.clear();
+		const inputs = this.getInputNodes().map((n) => n.index);
+		const outputs = this.getOutputNodes().map((n) => n.index);
+		const connections = this.synapses
+			.filter((s) => s.enabled)
+			.map((s) => [s.index, s.nodeIn, s.nodeOut] as [number, number, number]);
 
-		for (const synapse of this.synapses) {
-			const nodeOut = synapse.nodeOut;
+		const layers = calculateLayers(inputs, outputs, connections);
 
-			const existingLink = this.targetNodes.get(nodeOut);
+		const links: { node: number; synapseIndices: number[] }[] = [];
 
-			if (existingLink) {
-				existingLink.push(synapse.index);
-			} else {
-				this.targetNodes.set(nodeOut, [synapse.index]);
+		for (const layer of layers) {
+			for (const node of layer) {
+				const synapseIndices: number[] = connections
+					.filter(([index, left, right]) => right === node)
+					.map(([index]) => index);
+
+				links.push({
+					node,
+					synapseIndices,
+				});
 			}
 		}
+
+		this.evaluations = links;
+	}
+
+	/**
+	 * Get all nodes without any input synapses
+	 *
+	 * @returns The nodes without any input synapses
+	 */
+	private getInputNodes() {
+		return this.nodes.filter((node) =>
+			this.synapses.every((s) => s.nodeOut !== node.index)
+		);
+	}
+
+	/**
+	 * Get all nodes without any output synapses
+	 *
+	 * @returns The nodes without any output synapses
+	 */
+	private getOutputNodes() {
+		return this.nodes.filter((node) =>
+			this.synapses.every((s) => s.nodeIn !== node.index)
+		);
 	}
 
 	/**
@@ -178,31 +217,38 @@ export class Brain {
 	/**
 	 * Thinks through the network and updates the values of all nodes
 	 *
-	 * If there are multiple hidden layers, you will need to think() multiple times
-	 *
-	 * TODO consider a better solution...
+	 * @param inputs The input values to the network, keyed by their node index
 	 */
-	think() {
-		for (const [nodeIndex, synapseIndices] of this.targetNodes.entries()) {
-			const node = this.nodes[nodeIndex];
+	think(inputs: Record<number, number>) {
+		for (const node of this.nodes) {
+			this.setValue(node.index, 0);
+		}
 
-			let sum = 0;
+		for (const [indexStr, value] of Object.entries(inputs)) {
+			const index = parseInt(indexStr, 10);
 
-			for (const synapseIndex of synapseIndices) {
+			this.setValue(index, value);
+		}
+
+		for (const evaluation of this.evaluations) {
+			const node = this.nodes[evaluation.node];
+			const inputs = [];
+
+			for (const synapseIndex of evaluation.synapseIndices) {
 				const synapse = this.synapses[synapseIndex];
+				const inputValue = this.nodes[synapse.nodeIn].value;
 
-				if (!synapse.enabled) {
-					continue;
-				}
-
-				sum += synapse.weight * this.nodes[synapse.nodeIn].value;
+				inputs.push(inputValue * synapse.weight);
 			}
+
+			const sum = inputs.reduce((a, b) => a + b, 0);
 
 			node.value = activationFunctions[node.activation](
 				sum,
 				node.lastInput,
 				node.lastOutput
 			);
+
 			node.lastInput = sum;
 			node.lastOutput = node.value;
 		}

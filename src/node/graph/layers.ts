@@ -3,22 +3,22 @@
  *
  * @param inputIndices A list of indices for input nodes
  * @param outputIndices A list of indices for output nodes
- * @param connections A list of [inIndex, outIndex] connections between nodes
+ * @param connections A list of [synapseIndex, nodeIn, nodeOut] connections between nodes
  *
  * @returns A list of indices for required nodes
  */
 export function getRequiredNodes(
 	inputIndices: number[],
 	outputIndices: number[],
-	connections: [number, number][]
+	connections: [number, number, number][]
 ) {
 	let required = new Set(outputIndices);
 	let remaining = new Set(outputIndices);
 
 	while (true) {
 		const validNodes = connections
-			.filter(([a, b]) => !remaining.has(a) && remaining.has(b))
-			.map(([a, b]) => a);
+			.filter(([index, a, b]) => !remaining.has(a) && remaining.has(b))
+			.map(([index, a, b]) => a);
 
 		if (!validNodes.length) {
 			break;
@@ -44,14 +44,14 @@ export function getRequiredNodes(
  *
  * @param inputIndices A list of indices for input nodes
  * @param outputIndices A list of indices for output nodes
- * @param connections A list of [inIndex, outIndex] connections between nodes
+ * @param connections A list of [synapseIndex, nodeIn, nodeOut] connections between nodes
  *
  * @returns A list of list of node indices, representing the parallelisable layers
  */
 export function calculateLayers(
 	inputIndices: number[],
 	outputIndices: number[],
-	connections: [number, number][]
+	connections: [number, number, number][]
 ) {
 	const required = getRequiredNodes(inputIndices, outputIndices, connections);
 
@@ -61,16 +61,18 @@ export function calculateLayers(
 
 	while (true) {
 		const candidates = connections
-			.filter(([a, b]) => remaining.has(a) && !remaining.has(b))
-			.map(([a, b]) => b);
+			.filter(([index, a, b]) => remaining.has(a) && !remaining.has(b))
+			.map(([index, a, b]) => b);
 
 		const output = new Set<number>();
 
 		for (const node of candidates) {
 			const isRequired = required.has(node);
 
-			const inputConnections = connections.filter(([a, b]) => b === node);
-			const allInputsRemaining = inputConnections.every(([a, b]) =>
+			const inputConnections = connections.filter(
+				([index, a, b]) => b === node
+			);
+			const allInputsRemaining = inputConnections.every(([index, a, b]) =>
 				remaining.has(a)
 			);
 
