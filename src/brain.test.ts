@@ -32,7 +32,7 @@ describe("brain", () => {
 				[inputNodeIndex]: 1,
 			});
 
-			expect(brain.getValue(outputNodeIndex)).toEqual(1);
+			expect(brain.getNodeValue(outputNodeIndex)).toEqual(1);
 		});
 
 		describe("with a synapse weight of 4", () => {
@@ -45,7 +45,7 @@ describe("brain", () => {
 					[inputNodeIndex]: 1,
 				});
 
-				expect(brain.getValue(outputNodeIndex)).toEqual(4);
+				expect(brain.getNodeValue(outputNodeIndex)).toEqual(4);
 			});
 		});
 
@@ -62,7 +62,7 @@ describe("brain", () => {
 					[inputNodeIndex]: -1,
 				});
 
-				expect(brain.getValue(outputNodeIndex)).toEqual(1);
+				expect(brain.getNodeValue(outputNodeIndex)).toEqual(1);
 			});
 		});
 
@@ -87,7 +87,7 @@ describe("brain", () => {
 					[inputNodeIndex]: -1,
 				});
 
-				expect(brain.getValue(outputNodeIndex)).toEqual(1);
+				expect(brain.getNodeValue(outputNodeIndex)).toEqual(1);
 			});
 
 			describe("when the new synapses are set to 0.5", () => {
@@ -101,7 +101,7 @@ describe("brain", () => {
 						[inputNodeIndex]: -1,
 					});
 
-					expect(brain.getValue(outputNodeIndex)).toEqual(0.25);
+					expect(brain.getNodeValue(outputNodeIndex)).toEqual(0.25);
 				});
 			});
 		});
@@ -142,7 +142,7 @@ describe("brain", () => {
 				[inputNodeBIndex]: 1,
 			});
 
-			expect(brain.getValue(outputNodeIndex)).toEqual(2);
+			expect(brain.getNodeValue(outputNodeIndex)).toEqual(2);
 		});
 
 		describe("when there is a hidden node between the input nodes and the output node", () => {
@@ -167,7 +167,7 @@ describe("brain", () => {
 					[inputNodeBIndex]: 1,
 				});
 
-				expect(brain.getValue(outputNodeIndex)).toEqual(2);
+				expect(brain.getNodeValue(outputNodeIndex)).toEqual(2);
 			});
 
 			describe("when hidden node has a latch activation type", () => {
@@ -184,7 +184,7 @@ describe("brain", () => {
 						[inputNodeBIndex]: 1,
 					});
 
-					expect(brain.getValue(outputNodeIndex)).toEqual(1);
+					expect(brain.getNodeValue(outputNodeIndex)).toEqual(1);
 				});
 			});
 		});

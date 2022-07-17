@@ -36,7 +36,7 @@ brain.think({
 	[inputNodeIndex]: 1,
 });
 
-brain.getValue(outputNodeIndex); // 1
+brain.getNodeValue(outputNodeIndex); // 1
 ```
 
 ![image of 1-1 network](/examples/simple_1_1_network.png)
@@ -72,10 +72,10 @@ const outputNodeIndex = brain.addNode({
 brain.addSynapse(inputNodeIndex, outputNodeIndex);
 
 brain.think({
-	[inputNodeIndex]: 1,
+	[inputNodeIndex]: -1,
 });
 
-brain.getValue(outputNodeIndex); // 1
+brain.getNodeValue(outputNodeIndex); // 1
 ```
 
 ![image of 1-1 network](/examples/simple_1_1_network_absolute.png)

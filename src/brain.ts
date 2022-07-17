@@ -22,6 +22,46 @@ export class Brain {
 	evaluations: { node: number; synapseIndices: number[] }[] = [];
 
 	/**
+	 * Thinks through the network and updates the values of all nodes
+	 *
+	 * @param inputs The input values to the network, keyed by their node index
+	 */
+	think(inputs: Record<number, number>) {
+		for (const node of this.nodes) {
+			node.value = 0;
+		}
+
+		for (const [indexStr, value] of Object.entries(inputs)) {
+			const index = parseInt(indexStr, 10);
+
+			this.nodes[index].value = value;
+		}
+
+		for (const evaluation of this.evaluations) {
+			const node = this.nodes[evaluation.node];
+			const inputs = [];
+
+			for (const synapseIndex of evaluation.synapseIndices) {
+				const synapse = this.synapses[synapseIndex];
+				const inputValue = this.nodes[synapse.nodeIn].value;
+
+				inputs.push(inputValue * synapse.weight);
+			}
+
+			const sum = inputs.reduce((a, b) => a + b, 0);
+
+			node.value = activationFunctions[node.activation](
+				sum,
+				node.lastInput,
+				node.lastOutput
+			);
+
+			node.lastInput = sum;
+			node.lastOutput = node.value;
+		}
+	}
+
+	/**
 	 * Creates the internal structure of the network
 	 */
 	private createStructure() {
@@ -99,6 +139,17 @@ export class Brain {
 	}
 
 	/**
+	 * Gets the value of the node at the given index
+	 *
+	 * @param index The index of the node
+	 *
+	 * @returns The value of the node
+	 */
+	getNodeValue(index: number) {
+		return this.nodes[index].value;
+	}
+
+	/**
 	 * Inserts a node in the middle of an existing synapse
 	 *
 	 * @param synapseIndex The synapse to insert into
@@ -124,6 +175,17 @@ export class Brain {
 			node: newNodeIndex,
 			synapses: [leftSynapseIndex, rightSynapseIndex],
 		};
+	}
+
+	/**
+	 * Sets the activation function of the node at the given index
+	 *
+	 * @param index The index of the node
+	 *
+	 * @param activation The activation function to set the node to
+	 */
+	setNodeActivationType(index: number, activation: ActivationFunctionType) {
+		this.nodes[index].activation = activation;
 	}
 
 	/**
@@ -175,67 +237,5 @@ export class Brain {
 	 */
 	setSynapseWeight(index: number, weight: number) {
 		this.synapses[index].weight = weight;
-	}
-
-	/**
-	 * Sets the activation function of the node at the given index
-	 *
-	 * @param index The index of the node
-	 *
-	 * @param activation The activation function to set the node to
-	 */
-	setNodeActivationType(index: number, activation: ActivationFunctionType) {
-		this.nodes[index].activation = activation;
-	}
-
-	/**
-	 * Gets the value of the node at the given index
-	 *
-	 * @param index The index of the node
-	 *
-	 * @returns The value of the node
-	 */
-	getValue(index: number) {
-		return this.nodes[index].value;
-	}
-
-	/**
-	 * Thinks through the network and updates the values of all nodes
-	 *
-	 * @param inputs The input values to the network, keyed by their node index
-	 */
-	think(inputs: Record<number, number>) {
-		for (const node of this.nodes) {
-			node.value = 0;
-		}
-
-		for (const [indexStr, value] of Object.entries(inputs)) {
-			const index = parseInt(indexStr, 10);
-
-			this.nodes[index].value = value;
-		}
-
-		for (const evaluation of this.evaluations) {
-			const node = this.nodes[evaluation.node];
-			const inputs = [];
-
-			for (const synapseIndex of evaluation.synapseIndices) {
-				const synapse = this.synapses[synapseIndex];
-				const inputValue = this.nodes[synapse.nodeIn].value;
-
-				inputs.push(inputValue * synapse.weight);
-			}
-
-			const sum = inputs.reduce((a, b) => a + b, 0);
-
-			node.value = activationFunctions[node.activation](
-				sum,
-				node.lastInput,
-				node.lastOutput
-			);
-
-			node.lastInput = sum;
-			node.lastOutput = node.value;
-		}
 	}
 }
