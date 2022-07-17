@@ -1,6 +1,7 @@
 // TODO add differential
 export enum ActivationFunctionType {
 	CONSTANT = "constant",
+	ABSOLUTE = "absolute",
 	SIGMOID = "sigmoid",
 	LINEAR = "linear",
 	TANH = "tanh",
