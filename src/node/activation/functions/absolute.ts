@@ -6,5 +6,5 @@ import { ActivationFunction } from "../types";
  * @param input The input value
  * @returns Math.abs(input) capped at +100
  */
-export const constantNode: ActivationFunction = (input) =>
+export const absoluteNode: ActivationFunction = (input) =>
 	Math.min(Math.abs(input), 100);
