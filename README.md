@@ -136,6 +136,12 @@ When inserting a neuron within a synapse, the right-hand synapse carries the wei
 
 ![hidden inserted neuron](/examples/hidden_inserted_node.png)
 
+## Future improvements
+
+- Add other activation functions as required
+- Add biases to neurons
+- Implement innovation numbers for use with NEAT
+
 ## References
 
 - **Efficient Evolution of Neural Network Topologies**
