@@ -110,4 +110,87 @@ describe("brain", () => {
 			});
 		});
 	});
+
+	describe("with a brain connecting two input nodes to an output node", () => {
+		let inputNodeAIndex: number;
+		let synapseAIndex: number;
+
+		let inputNodeBIndex: number;
+		let synapseBIndex: number;
+
+		let outputNodeIndex: number;
+
+		beforeEach(() => {
+			inputNodeAIndex = brain.addNode({
+				activation: ActivationFunctionType.CONSTANT,
+				description: "input",
+			});
+
+			inputNodeBIndex = brain.addNode({
+				activation: ActivationFunctionType.CONSTANT,
+				description: "input",
+			});
+
+			outputNodeIndex = brain.addNode({
+				activation: ActivationFunctionType.CONSTANT,
+				description: "output",
+			});
+
+			synapseAIndex = brain.addSynapse(inputNodeAIndex, outputNodeIndex);
+			synapseBIndex = brain.addSynapse(inputNodeBIndex, outputNodeIndex);
+
+			brain.setValue(inputNodeAIndex, 1);
+			brain.setValue(inputNodeBIndex, 1);
+		});
+
+		test("should add values correctly", () => {
+			brain.think();
+
+			expect(brain.getValue(outputNodeIndex)).toEqual(2);
+		});
+
+		describe("when there is a hidden node between the input nodes and the output node", () => {
+			let hiddenNodeIndex: number;
+
+			beforeEach(() => {
+				const { node: hiddenNode } = brain.insertNode(synapseAIndex, {
+					description: "hidden node",
+					activation: ActivationFunctionType.CONSTANT,
+				});
+
+				hiddenNodeIndex = hiddenNode;
+
+				brain.addSynapse(inputNodeBIndex, hiddenNodeIndex);
+
+				brain.setSynapseEnabled(synapseBIndex, false);
+			});
+
+			test("should add values correctly", () => {
+				// think twice to allow for hidden layers
+				// TODO fix this
+				brain.think();
+				brain.think();
+
+				expect(brain.getValue(outputNodeIndex)).toEqual(2);
+			});
+
+			describe("when hidden node has a latch activation type", () => {
+				beforeEach(() => {
+					brain.setNodeActivationType(
+						hiddenNodeIndex,
+						ActivationFunctionType.LATCH
+					);
+				});
+
+				test("should add values correctly", () => {
+					// think twice to allow for hidden layers
+					// TODO fix this
+					brain.think();
+					brain.think();
+
+					expect(brain.getValue(outputNodeIndex)).toEqual(1);
+				});
+			});
+		});
+	});
 });
