@@ -62,6 +62,34 @@ export class Brain {
 	}
 
 	/**
+	 * Inserts a node in the middle of an existing synapse
+	 *
+	 * @param synapseIndex The synapse to insert into
+	 * @param node The node to insert
+	 *
+	 * @returns The index of the new node
+	 */
+	insertNode(synapseIndex: number, node: NodeCreation) {
+		const synapse = this.synapses[synapseIndex];
+
+		const newNodeIndex = this.addNode(node);
+
+		const leftSynapseIndex = this.addSynapse(synapse.nodeIn, newNodeIndex, 1);
+		const rightSynapseIndex = this.addSynapse(
+			newNodeIndex,
+			synapse.nodeOut,
+			synapse.weight
+		);
+
+		this.setSynapseEnabled(synapseIndex, false);
+
+		return {
+			node: newNodeIndex,
+			synapses: [leftSynapseIndex, rightSynapseIndex],
+		};
+	}
+
+	/**
 	 * Adds a new synapse to the network
 	 *
 	 * @param nodeIn The index of the input node
@@ -78,6 +106,7 @@ export class Brain {
 			nodeIn,
 			nodeOut,
 			weight,
+			enabled: true,
 		};
 
 		this.synapses[index] = newSynapse;
@@ -85,6 +114,19 @@ export class Brain {
 		this.createStructure();
 
 		return index;
+	}
+
+	/**
+	 * Sets the enabled state of the synapse at the given index
+	 *
+	 * @param index The index of the synapse
+	 *
+	 * @param enabled The enabled state to set the synapse to
+	 */
+	setSynapseEnabled(index: number, enabled: boolean = true) {
+		this.synapses[index].enabled = enabled;
+
+		this.createStructure();
 	}
 
 	/**
@@ -135,6 +177,10 @@ export class Brain {
 
 	/**
 	 * Thinks through the network and updates the values of all nodes
+	 *
+	 * If there are multiple hidden layers, you will need to think() multiple times
+	 *
+	 * TODO consider a better solution...
 	 */
 	think() {
 		for (const [nodeIndex, synapseIndices] of this.targetNodes.entries()) {
@@ -144,6 +190,10 @@ export class Brain {
 
 			for (const synapseIndex of synapseIndices) {
 				const synapse = this.synapses[synapseIndex];
+
+				if (!synapse.enabled) {
+					continue;
+				}
 
 				sum += synapse.weight * this.nodes[synapse.nodeIn].value;
 			}

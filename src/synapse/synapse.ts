@@ -14,4 +14,9 @@ export type Synapse = {
 	 * The weight of this synapse
 	 */
 	weight: number;
+
+	/**
+	 * Whether the synapse is enabled
+	 */
+	enabled: boolean;
 };

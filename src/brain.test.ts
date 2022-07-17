@@ -63,5 +63,51 @@ describe("brain", () => {
 				expect(brain.getValue(outputNodeIndex)).toEqual(1);
 			});
 		});
+
+		describe("when inserting a new node between the two existing nodes", () => {
+			let leftSynapseIndex: number;
+			let rightSynapseIndex: number;
+
+			beforeEach(() => {
+				const {
+					synapses: [left, right],
+				} = brain.insertNode(synapseIndex, {
+					description: "absolute hidden node",
+					activation: ActivationFunctionType.ABSOLUTE,
+				});
+
+				leftSynapseIndex = left;
+				rightSynapseIndex = right;
+			});
+
+			test("should apply hidden node correctly", () => {
+				brain.setValue(inputNodeIndex, -1);
+
+				// think twice because the hidden node needs its value updated as well
+				// TODO consider a better solution...
+				brain.think();
+				brain.think();
+
+				expect(brain.getValue(outputNodeIndex)).toEqual(1);
+			});
+
+			describe("when the new synapses are set to 0.5", () => {
+				beforeEach(() => {
+					brain.setSynapseWeight(leftSynapseIndex, 0.5);
+					brain.setSynapseWeight(rightSynapseIndex, 0.5);
+				});
+
+				test("should apply hidden node correctly", () => {
+					brain.setValue(inputNodeIndex, -1);
+
+					// think twice because the hidden node needs its value updated as well
+					// TODO consider a better solution...
+					brain.think();
+					brain.think();
+
+					expect(brain.getValue(outputNodeIndex)).toEqual(0.25);
+				});
+			});
+		});
 	});
 });
